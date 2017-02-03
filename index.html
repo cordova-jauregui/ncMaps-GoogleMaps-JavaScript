@@ -5,16 +5,60 @@
 	<title>ncMaps</title>
 	<script src="ncMapsC.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-	<script>
-		map=new ncMaps({idMapa:"mapa",apiKey:'ABQIAAAAnfs7bKE82qgb3Zc2YyS-oBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSySz_REpPq-4WZA27OwgbtyR3VcA'},{});
-		$(document).ready(function(){
 
-			console.log(map.getZoom());
+	<script>
+        sp=[
+                [19.2419,-103.7529],
+                [19.2466,-103.7362]
+            ];
+        paht=[
+                [19.2419,-103.7529],
+                [19.2466,-103.7362],
+                [19.2216,-103.7463],
+                [19.2012,-103.7403],
+                [19.1810,-103.7093],
+                [19.1605,-103.6973],
+                [19.1400,-103.7353]
+
+        ];
+        path=[];
+        spRopt=[];
+		$(document).ready(function(){
+            map=new ncMaps({idMapa:"mapa"},{},function (a){
+            console.log(    a );
+            });
+//            $.each(paht,function(i,p){
+//               latLng=map.latLng(p[0],p[1]);
+//                path.push(latLng);
+//            });
+//            $.each(sp,function(i,p){
+//               latLng=map.latLng(p[0],p[1]);
+//                spRopt.push(latLng);
+//            });
+            
+            
+            
+//            map.agregaPolyline({path,autoZoom:true,flechas:true});
+//            origen=path[0];
+//            destino=path[1];
+//            map.getDirecciones({origen,destino,verDistancia:true},function (data){
+//                console.log(data );
+//            });
+//            map.getDireccionDePunto(origen,function (data){
+//                console.log(data );
+//            });
+//            distancia=map.getPuntoDeDireccion({direccion:"colima"},function (data){
+//                console.log(data );
+//            });
+            
+
+
+
 		});
 	</script>
 	<style>
 		#mapa{
-			height: 300px;
+			height: 500px;
 			width: 100%;
 		}
 	</style>

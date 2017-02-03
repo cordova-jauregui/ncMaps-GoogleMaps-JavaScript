@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>ncMaps</title>
+	<script src="ncMapsC.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script>
+		map=new ncMaps({idMapa:"mapa",apiKey:'ABQIAAAAnfs7bKE82qgb3Zc2YyS-oBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSySz_REpPq-4WZA27OwgbtyR3VcA'},{});
+		$(document).ready(function(){
+
+			console.log(map.getZoom());
+		});
+	</script>
+	<style>
+		#mapa{
+			height: 300px;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="mapa"></div>
+</body>
+</html>

@@ -152,7 +152,7 @@ class ncMaps{
 	    if(!infoWD.marker)	return 	this._mensaje("ai-1");
 	    !infoWD.contenido  	?		infoWD.contenido 	=	infoWD.marker.getTitle()	: 	"";
 	    !infoWD.autoPan 	?		infoWD.autoPan 		=	false 						: 	"";
-	    !infoWD.clickable	?		infoWD.clickable	=	true 						: 	""
+	    !infoWD.clickable	?		infoWD.clickable	=	true 						: 	"";
         let info = new google.maps.InfoWindow(	{
 													disableAutoPan: infoWD.autoPan
 												 });
@@ -253,9 +253,9 @@ class ncMaps{
 													infoBoxContent	: polyOpt.infoBoxContent
 												 }); 
 	    polygon.getBounds = function()	{
-											let bounds = new google.maps.LatLngBounds()
-											this.getPath().forEach(function(element,index){bounds.extend(element)})
-											return bounds
+											let bounds = new google.maps.LatLngBounds();
+											this.getPath().forEach(function(element,index){bounds.extend(element)});
+											return bounds;
 										 };
 	    polygon.getCenter = function()	{
 	    									return this.getBounds().getCenter();
@@ -415,7 +415,7 @@ class ncMaps{
 					return google.maps.TravelMode.DRIVING;
 				 break;
 			}
-		 }
+		 };
 		let totalKm				= function(oResult){
 	        let total 	= 0;
 	        let myroute = oResult.routes[0];
@@ -424,12 +424,12 @@ class ncMaps{
 	        }
 	        total = total / 1000;
 	        return total + ' km';
-	     }
+	     };
 	    let puntosObligados		= function(){
 	    	$.each(directOpt.pathObligados,function(i,po){
 	        	_waypoints.push({location:po});
 		     });
-	     }
+	     };
 	    puntosObligados();
 	    _travelMode=getTravelMode(directOpt.modeDeViaje);
 	    let directionsDisplay=new google.maps.DirectionsRenderer({
@@ -802,7 +802,7 @@ class ncMaps{
 	    !spRopt.interpolate	?		spRopt.interpolate	= true	: "";
 	    var self=this;
 	    var pathValues 	= [];
-	    var puntos		= []
+	    var puntos		= [];
 	    $.each(spRopt.path,function(i,d){
 	        pathValues.push(d.toUrlValue());
 	     });

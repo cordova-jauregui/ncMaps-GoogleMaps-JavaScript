@@ -23,7 +23,6 @@ class ncMaps{
 			case "listo":
 			case "ready":
 				let timer=setInterval(function(){
-					console.log('timer');
 					if(window.google){
 						clearInterval(timer);
 						callback();	
@@ -36,7 +35,7 @@ class ncMaps{
         let librerias="";
         if(mc.libraries){
             librerias="libraries=";
-            mc.libraries.foreach(function(libreria,i){
+            mc.libraries.forEach(function(libreria,i){
                 let c=",";
                 if(i==mc.libraries.length-1)
                     c="";
@@ -640,7 +639,6 @@ class ncMaps{
                 	console.log(punto,direccion);  
             } else {
                 if(!addressOpt.restrictions.pais){
-                    console.log('otra oportunidad');
                     this.getPositionByAddress({restrictions:false,direccion: addressOpt.direccion,content:addressOpt.content});
                 }else
                     window.alert('Google no pudo encontrar el punto ' + status);

@@ -3,8 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>ncMaps</title>
-	<script src="ncMaps.min.js"></script>
-	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> -->
+	<script src="ncMaps.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 	<script>
         sp=[
@@ -23,8 +23,9 @@
         ];
         path=[];
         spRopt=[];
-        map=new ncMaps({idMapa:"mapa"});
+        map=new ncMaps({idMapa:"mapa",libraries:['places']});
             map.on('ready',function(){
+                map.iniciaSearchBox();
             paht.forEach(p=>{
                 latLng=map.latLng(p[0],p[1]);
                 path.push(latLng);

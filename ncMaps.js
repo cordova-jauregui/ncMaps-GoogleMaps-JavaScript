@@ -35,7 +35,7 @@ class ncMaps{
         let librerias="";
         if(mc.libraries){
             librerias="libraries=";
-            mc.libraries.foreach(function(libreria,i){
+            mc.libraries.forEach(function(libreria,i){
                 let c=",";
                 if(i==mc.libraries.length-1)
                     c="";

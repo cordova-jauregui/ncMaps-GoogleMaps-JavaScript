@@ -261,7 +261,7 @@ class ncMaps{
 	    									return this.getBounds().getCenter();
 	    								 };
 	    if(this.infoBox){
-	        var labelOptions=	{
+	        let labelOptions=	{
 						            content					: this.infoBoxContent,
 						            boxStyle				: {
 																textAlign	: "center",
@@ -381,7 +381,8 @@ class ncMaps{
 		    *   mpOpt.preserveViewport  -> Conservar la vista del mapa actual.
 		    *   mpOpt.draggable         -> Permite mover los puntos de la ruta.
 		 */
-	    $.each(this.direcArray,function(i,oDireccion){oDireccion.setMap(null);});$("#mAkmToNsUn").remove();
+		$("#mAkmToNsUn").remove();
+	    this.direcArray.forEach(oDireccion=>{oDireccion.setMap(null);});
 	    if(typeof directOpt != 'object')	return 	this._mensaje("oMissing");
 	    if(!directOpt.origen)		return 	this._mensaje("gd-1");
 	    if(!directOpt.destino)		return 	this._mensaje("gd-2");
@@ -426,10 +427,10 @@ class ncMaps{
 	        return total + ' km';
 	     };
 	    let puntosObligados		= function(){
-	    	$.each(directOpt.pathObligados,function(i,po){
-	        	_waypoints.push({location:po});
-		     });
-	     };
+	    	directOpt.pathObligados.forEach(po=>{
+	    		_waypoints.push({location:po});
+	    	});
+	     }
 	    puntosObligados();
 	    _travelMode=getTravelMode(directOpt.modeDeViaje);
 	    let directionsDisplay=new google.maps.DirectionsRenderer({
@@ -681,7 +682,7 @@ class ncMaps{
 	        ()=> this.searchBox.setBounds(()=> this.mapa.getBounds());
 	    });
 	    this.searchBox.addListener('places_changed', function() {
-	        var places = ()=> this.searchBox.getPlaces();
+	        let places = ()=> this.searchBox.getPlaces();
 	        if (places.length == 0) {
 	            return;
 	        }
@@ -708,10 +709,10 @@ class ncMaps{
 	    if(generaKML.path==undefined){return this._mensaje({"error":"generaKML","codigo":2})};
 	    generaKML.titulo==undefined?generaKML.titulo="Ruta":""; 
 	    var _coordinates="";
-	    $.each(generaKML.path,function(i,p){
+	    generaKML.path.forEach(p=>{
 	        _coordinates+=p.F+','+p.A+','+'0 ';
 	     });
-	    var _xml='<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom"><Document><name>'+generaKML.titulo+'.kml</name><StyleMap id="msn_ylw-pushpin"><Pair><key>normal</key><styleUrl>#sn_ylw-pushpin</styleUrl></Pair><Pair><key>highlight</key><styleUrl>#sh_ylw-pushpin</styleUrl></Pair></StyleMap><Style id="sh_ylw-pushpin"><IconStyle><scale>1.3</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle><LineStyle><color>ccff6a00</color><width>4</width></LineStyle></Style><Style id="sn_ylw-pushpin"><IconStyle><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle><LineStyle><color>ccff6a00</color><width>4</width></LineStyle></Style><Placemark><name>'+generaKML.titulo+'</name><styleUrl>#msn_ylw-pushpin</styleUrl><LineString><tessellate>1</tessellate><coordinates>'+_coordinates+'</coordinates></LineString></Placemark></Document></kml>';
+	    let _xml='<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom"><Document><name>'+generaKML.titulo+'.kml</name><StyleMap id="msn_ylw-pushpin"><Pair><key>normal</key><styleUrl>#sn_ylw-pushpin</styleUrl></Pair><Pair><key>highlight</key><styleUrl>#sh_ylw-pushpin</styleUrl></Pair></StyleMap><Style id="sh_ylw-pushpin"><IconStyle><scale>1.3</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle><LineStyle><color>ccff6a00</color><width>4</width></LineStyle></Style><Style id="sn_ylw-pushpin"><IconStyle><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle><LineStyle><color>ccff6a00</color><width>4</width></LineStyle></Style><Placemark><name>'+generaKML.titulo+'</name><styleUrl>#msn_ylw-pushpin</styleUrl><LineString><tessellate>1</tessellate><coordinates>'+_coordinates+'</coordinates></LineString></Placemark></Document></kml>';
 	    return _xml;
 	 }
 	autoZoom(objAz){
@@ -723,7 +724,7 @@ class ncMaps{
 	    if(!objAz.tipo)		return this._mensaje("az-1");
 	    !Az.qZoom			?		objAz.qZoom	= 0	: ""; 
 	    var latlngbounds = new google.maps.LatLngBounds();
-	    $.each(objAz.path,function(i,o){
+	    objAz.path.forEach(o=>{
 	        switch (objAz.tipo.toLocaleLowerCase()){
 	            case "latlng":
 	                latlngbounds.extend(o);
@@ -765,28 +766,28 @@ class ncMaps{
 	pointToTrazo(point){//EVALUAR
 	    if(point==null)
 	        return "Se requiere array de coordenadas:[{long,lat}]";
-	    var points=point.replace(/["'()]/g,"").replace(/POINT /g,"").split(",");
+	    let points=point.replace(/["'()]/g,"").replace(/POINT /g,"").split(",");
 	    var path= new Array();
-	    $.each(points,function (c,p){
+	    points.forEach(p=>{
 	         p=p.split(" ");
 	        lt=new google.maps.LatLng(p[1],p[0]);
 	        path.push(lt);
 	    });
-	    var trazoCodificado = google.maps.geometry.encoding.encodePath(path);
+	    let trazoCodificado = google.maps.geometry.encoding.encodePath(path);
 	    return trazoCodificado;
 	 }
 	polygonToTrazo(POLYGON){//EVALUAR
 	    if(POLYGON==null)
 	        return "Se requiere array de coordenadas:[{long,lat},{long,lat}]";
-	    var points=POLYGON.replace(/["'()]/g,"").replace(/POLYGON/g,"").split(",");
+	    let points=POLYGON.replace(/["'()]/g,"").replace(/POLYGON/g,"").split(",");
 
 	    var path= new Array();
-	    $.each(points,function (c,p){
+	    points.forEach(p=>{
 	        p=p.split(" ");
 	        lt=new google.maps.LatLng(p[1],p[0]);
 	        path.push(lt);
 	    });
-	    var trazoCodificado = google.maps.geometry.encoding.encodePath(path);
+	    let trazoCodificado = google.maps.geometry.encoding.encodePath(path);
 	    return trazoCodificado;
 	 }
 	trazoToPath(trazo){
@@ -803,7 +804,7 @@ class ncMaps{
 	    var self=this;
 	    var pathValues 	= [];
 	    var puntos		= [];
-	    $.each(spRopt.path,function(i,d){
+	    spRopt.path.forEach(d=>{
 	        pathValues.push(d.toUrlValue());
 	     });
 	    $.get('https://roads.googleapis.com/v1/snapToRoads', {
@@ -811,7 +812,7 @@ class ncMaps{
 	        key: self.apiKey,
 	        path: pathValues.join('|')
 	      },function(data) {
-	        $.each(data.snappedPoints,function(i,d){
+	    	data.snappedPoints.forEach(d=>{
 	           let latlng=self.latLng(d.location.latitude,d.location.longitude);
 	           puntos.push(latlng);
 	         });
@@ -825,11 +826,11 @@ class ncMaps{
 	    //callback({'position':position,'direccion':dir});   
 	 }
 	clearMap(){
-	    $.each(this.markerArray,function(i,obj){obj.setMap(null);});
-	    $.each(this.circuloArray,function(i,obj){obj.setMap(null);});
-	    $.each(this.polyArray,function(i,obj){obj.setMap(null);});
-	    $.each(this.direcArray,function(i,obj){obj.setMap(null);});
-	    $.each(this.polylineArray,function(i,obj){obj.setMap(null);});
+		this.markerArray.forEach(obj=>{obj.setMap(null);});
+		this.circuloArray.forEach(obj=>{obj.setMap(null);});
+		this.polyArray.forEach(obj=>{obj.setMap(null);});
+		this.direcArray.forEach(obj=>{obj.setMap(null);});
+		this.polylineArray.forEach(obj=>{obj.setMap(null);});
 	    $("#mAkmToNsUn").remove();
 	    this.markerArray=[];
 	    this.circuloArray=[];
@@ -885,7 +886,7 @@ class ncMaps{
 	    return mensaje;
 	 }
 	loadScript(url,callback){
-		var script = document.createElement("script");
+		let script = document.createElement("script");
 	    script.type = "text/javascript";
 	    if (script.readyState)  //IE
 	        script.onreadystatechange = function(){

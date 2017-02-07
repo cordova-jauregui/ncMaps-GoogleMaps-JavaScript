@@ -639,7 +639,6 @@ class ncMaps{
                 	console.log(punto,direccion);  
             } else {
                 if(!addressOpt.restrictions.pais){
-                    console.log('otra oportunidad');
                     this.getPositionByAddress({restrictions:false,direccion: addressOpt.direccion,content:addressOpt.content});
                 }else
                     window.alert('Google no pudo encontrar el punto ' + status);

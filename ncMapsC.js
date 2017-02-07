@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.0 03/02/2017
+    ** v 1.5.3 07/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{

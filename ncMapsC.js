@@ -16,7 +16,7 @@ class ncMaps{
 	    	this._cargaGoogleMaps(mc,optMap);
 	    }else if(!optMap)
 	        this.iniciaMapa(optMap);
-	 };
+	 }
 	on(action,callback){
 		switch (action){
 			case "listo":
@@ -48,7 +48,7 @@ class ncMaps{
          }
         this.loadScript('https://maps.googleapis.com/maps/api/js?'+librerias+apiKey,() => this.iniciaMapa(optMap));
         return ;
-	 };
+	 }
 	_iniciaVariablesInternas(){
 		this.mapa=null;
  		this.markerArray=[];
@@ -61,7 +61,7 @@ class ncMaps{
 	    this.markerAddress=[];
 	    this.polylineAnimatedInterval=null;
 	    this.callback=null;
-	 };
+	 }
 	iniciaMapa(mpOpt={}){
 	    !mpOpt.lat          ? this._mensaje('oDefault')		: "";
 	    !mpOpt.lat 			? mpOpt.lat 		= 19.2469	: "";
@@ -92,7 +92,7 @@ class ncMaps{
 	        styles					:	mpOpt.style
 	     };
 	    this.mapa=new google.maps.Map(document.getElementById(this.idMapa),mapOptions);
-	 };
+	 }
 	agregarCirculo(circOpt={}){
 		/* - agregarCirculo - 
 		    *   Descripción: Esta función pinta sobre un google map un círculo.
@@ -149,7 +149,7 @@ class ncMaps{
 	        this.moverMapa({latLng:circulo.getCenter()});
 	    this.circuloArray.push(circulo);
 	    return circulo;
-	 };
+	 }
 	agregarInfoWindow(infoWD={}){
 		/*  - agregarInfoWindowfunction - 
 		    *   Descripción:Genera un infoWindow para un marcador especifico.
@@ -177,7 +177,7 @@ class ncMaps{
 	         });
          }
         return info;  
-	 };
+	 }
 	agregarMarcador(markOpt={}){
 		/* - agregaMarcador -
 		    *----------------
@@ -228,7 +228,7 @@ class ncMaps{
 	     }
 
 	    return marker;
-	 };
+	 }
 	agregaPolygon(polyOpt={}){
 		/* - agregaPolygon -
 		    *    ----------------
@@ -292,10 +292,10 @@ class ncMaps{
 	         };
 	        polygon.infoBox = new InfoBox(labelOptions);
 	        polygon.infoBox.open(polygon.getMap());
-	     };
+	     }
 	 	this.polyGonArray.push(polygon);
 	    return polygon;
-	 };
+	 }
 	agregaPolyline(polyOpt){
 		/* - agregaPolyline -
 		    *    ----------------
@@ -331,7 +331,7 @@ class ncMaps{
 	        						titulo:"Destino",
 	        						latLng:polyOpt.path[polyOpt.path.length-1],urlIcon:'http://maps.google.com/mapfiles/ms/micons/red-dot.png'}
 	        					 );
-	     };
+	     }
 	    let simbolo_flecha = "";
 	    if(polyOpt.flechas)
 	        simbolo_flecha = {
@@ -431,7 +431,7 @@ class ncMaps{
 				 break;
 			}
 		 };
-		let totalKm				= function(oResult){
+		var totalKm				= function(oResult){
 	        let total 	= 0;
 	        let myroute = oResult.routes[0];
 	        for (let i = 0; i < myroute.legs.length; i++) {
@@ -444,7 +444,7 @@ class ncMaps{
 	    	directOpt.pathObligados.forEach(po=>{
 	    		_waypoints.push({location:po});
 	    	});
-	     }
+	     };
 	    puntosObligados();
 	    _travelMode=getTravelMode(directOpt.modeDeViaje);
 	    let directionsDisplay=new google.maps.DirectionsRenderer({
@@ -525,7 +525,7 @@ class ncMaps{
 	    }catch(err){
 	    	console.log(err);
 	   	}
-	 }    
+	 } 
 	getDistanciaLineal(disLinOpt){
 		/* -getDistanciaLineal-
 			*

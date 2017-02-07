@@ -17,6 +17,20 @@ class ncMaps{
 	    }else if(!optMap)
 	        this.iniciaMapa(optMap);
 	 };
+	on(action,callback){
+		switch (action){
+			case "listo":
+			case "ready":
+				let timer=setInterval(function(){
+					console.log('timer');
+					if(window.google){
+						clearInterval(timer);
+						callback();	
+					}
+				},500);
+			break;
+			}
+	}
 	_cargaGoogleMaps(mc,optMap){
         let librerias="";
         if(mc.libraries){

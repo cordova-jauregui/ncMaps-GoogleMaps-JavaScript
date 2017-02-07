@@ -23,7 +23,6 @@ class ncMaps{
 			case "listo":
 			case "ready":
 				let timer=setInterval(function(){
-					console.log('timer');
 					if(window.google){
 						clearInterval(timer);
 						callback();	

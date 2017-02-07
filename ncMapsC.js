@@ -7,7 +7,8 @@
  */
 class ncMaps{
 	constructor(mc,optMap){
-		if(!mc) 				return 	this._mensaje("c-1");
+	    if(typeof mc != 'object')	return 	this._mensaje("oMissing");
+		if(!mc.idMapa) 				return 	this._mensaje("c-1");
 	    !mc.apiKey				?		this._mensaje("c-2")	:	this.apiKey=mc.apiKey;
 	    !mc.cargarMaps			?		mc.cargarMaps=true 		: 	"";
 	    this.idMapa=mc.idMapa;
@@ -30,7 +31,7 @@ class ncMaps{
 				},500);
 			break;
 			}
-	}
+	 }
 	_cargaGoogleMaps(mc,optMap){
         let librerias="";
         if(mc.libraries){
@@ -229,7 +230,7 @@ class ncMaps{
 
 	    return marker;
 	 }
-	agregaPolygon(polyOpt={}){
+	agregaPolygon(polyOpt){
 		/* - agregaPolygon -
 		    *    ----------------
 		    *   Agrega una Polyline al mapa con parametros que se espesifican mediante un objeto.
@@ -244,6 +245,7 @@ class ncMaps{
 		    *   mpOpt.anchoLinea        -> ...
 		    *   mpOpt.opacidadLinea     -> ...
 		 */
+		if(typeof polyOpt != 'object')	return 	this._mensaje("oMissing");
 	    if(!polyOpt.path)			return this._mensaje("oMissing");
 		!polyOpt.mapa				? polyOpt.mapa=this.mapa:"";
 		!polyOpt.color				? polyOpt.color="#00B8D4":"";
@@ -311,7 +313,7 @@ class ncMaps{
 		    *   mpOpt.anchoLinea        -> ...
 		    *   mpOpt.opacidadLinea     -> ...
 		 */
-	    if(typeof polyOpt != 'object')	return 	this._mensaje("oMissing");
+		if(typeof polyOpt != 'object')	return 	this._mensaje("oMissing");
 	    if(!polyOpt.path)		return 	this._mensaje("ap-1");
 		!polyOpt.flechas		? 		polyOpt.flechas			= false		: "";
 		!polyOpt.colorLinea		? 		polyOpt.colorLinea		= "#336666"	: "";
@@ -397,7 +399,6 @@ class ncMaps{
 		 */
 		$("#mAkmToNsUn").remove();
 	    this.direcArray.forEach(oDireccion=>{oDireccion.setMap(null);});
-	    if(typeof directOpt != 'object')	return 	this._mensaje("oMissing");
 	    if(!directOpt.origen)		return 	this._mensaje("gd-1");
 	    if(!directOpt.destino)		return 	this._mensaje("gd-2");
 	    !directOpt.pathObligados	?		directOpt.pathObligados		= []		: "";

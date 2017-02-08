@@ -18,25 +18,19 @@ class ncMaps{
 	    }else if(!optMap)
 	        this.iniciaMapa(optMap);
 	 }
-	on(action,callback){
-		switch (action){
-			case "listo":
-			case "ready":
-				let timer=setInterval(function(){
-					console.log('timer');
-					if(window.google){
-						clearInterval(timer);
-						callback();	
-					}
-				},500);
-			break;
+	ready(callback){
+		let timer=setInterval(function(){
+			if(window.google){
+				clearInterval(timer);
+				callback(this);	
 			}
+		}.bind(this),500);
 	 }
 	_cargaGoogleMaps(mc,optMap){
         let librerias="";
         if(mc.libraries){
             librerias="libraries=";
-            mc.libraries.foreach(function(libreria,i){
+            mc.libraries.forEach(function(libreria,i){
                 let c=",";
                 if(i==mc.libraries.length-1)
                     c="";

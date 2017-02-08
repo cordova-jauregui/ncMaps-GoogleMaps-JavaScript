@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.3 07/02/2017
+    ** v 1.5.4 08/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -23,6 +23,7 @@ class ncMaps{
 			case "listo":
 			case "ready":
 				let timer=setInterval(function(){
+					console.log('timer');
 					if(window.google){
 						clearInterval(timer);
 						callback();	
@@ -35,7 +36,7 @@ class ncMaps{
         let librerias="";
         if(mc.libraries){
             librerias="libraries=";
-            mc.libraries.forEach(function(libreria,i){
+            mc.libraries.foreach(function(libreria,i){
                 let c=",";
                 if(i==mc.libraries.length-1)
                     c="";
@@ -267,12 +268,12 @@ class ncMaps{
 													infoBox			: polyOpt.infoBoxEnable,
 													infoBoxContent	: polyOpt.infoBoxContent
 												 }); 
-	    polygon.getBounds = function()	{
+	    polygon.getBounds =()=>	{
 											let bounds = new google.maps.LatLngBounds();
 											this.getPath().forEach(function(element,index){bounds.extend(element)});
 											return bounds;
 										 };
-	    polygon.getCenter = function()	{
+	    polygon.getCenter =()=>	{
 	    									return this.getBounds().getCenter();
 	    								 };
 	    if(this.infoBox){
@@ -415,7 +416,7 @@ class ncMaps{
 	    let directionsService	= new google.maps.DirectionsService();
 	    let start				= directOpt.origen;
 	    let end					= directOpt.destino;
-	    let getTravelMode		= function(modoDeViaje){
+	    let getTravelMode		= (modoDeViaje)=>{
  			switch(modoDeViaje.toUpperCase()){
 				case "BICYCLING":
 					return google.maps.TravelMode.BICYCLING;
@@ -431,7 +432,7 @@ class ncMaps{
 				 break;
 			}
 		 };
-		var totalKm				= function(oResult){
+		var totalKm				=(oResult)=>{
 	        let total 	= 0;
 	        let myroute = oResult.routes[0];
 	        for (let i = 0; i < myroute.legs.length; i++) {
@@ -440,7 +441,7 @@ class ncMaps{
 	        total = total / 1000;
 	        return total + ' km';
 	     };
-	    let puntosObligados		= function(){
+	    let puntosObligados		=()=>{
 	    	directOpt.pathObligados.forEach(po=>{
 	    		_waypoints.push({location:po});
 	    	});
@@ -533,7 +534,7 @@ class ncMaps{
         if(typeof disLinOpt != 'object')	return 	this._mensaje("oMissing");
         if(!disLinOpt.origen)	return this._mensaje("gd-1");
         if(!disLinOpt.destino)	return this._mensaje("gd-2");
-        let rad		= function(x) {
+        let rad		=(x)=>{
             return x * Math.PI / 180;
          };
         let R		= 6378137; // Earth’s mean radius in meter
@@ -639,6 +640,7 @@ class ncMaps{
                 	console.log(punto,direccion);  
             } else {
                 if(!addressOpt.restrictions.pais){
+                    console.log('otra oportunidad');
                     this.getPositionByAddress({restrictions:false,direccion: addressOpt.direccion,content:addressOpt.content});
                 }else
                     window.alert('Google no pudo encontrar el punto ' + status);
@@ -902,7 +904,7 @@ class ncMaps{
 		let script = document.createElement("script");
 	    script.type = "text/javascript";
 	    if (script.readyState)  //IE
-	        script.onreadystatechange = function(){
+	        script.onreadystatechange =()=>{
 	            if (script.readyState == "loaded" ||
 	                    script.readyState == "complete"){
 	                script.onreadystatechange = null;
@@ -910,7 +912,7 @@ class ncMaps{
 	            }
 	        };
 	    else  //Others
-	        script.onload = function(){
+	        script.onload =()=>{
 	            callback();
 	        };
 	    script.src = url;

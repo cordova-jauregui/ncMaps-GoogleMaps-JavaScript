@@ -731,7 +731,7 @@ class ncMaps{
 	    if(typeof objAz != 'object')	return 	this._mensaje("oMissing");
 	    if(!objAz.path)		return this._mensaje("ap-1");
 	    if(!objAz.tipo)		return this._mensaje("az-1");
-	    !Az.qZoom			?		objAz.qZoom	= 0	: ""; 
+	    !objAz.qZoom			?		objAz.qZoom	= 0	: ""; 
 	    var latlngbounds = new google.maps.LatLngBounds();
 	    objAz.path.forEach(o=>{
 	        switch (objAz.tipo.toLocaleLowerCase()){

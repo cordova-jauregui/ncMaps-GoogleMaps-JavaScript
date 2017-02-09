@@ -18,25 +18,19 @@ class ncMaps{
 	    }else if(!optMap)
 	        this.iniciaMapa(optMap);
 	 }
-	on(action,callback){
-		switch (action){
-			case "listo":
-			case "ready":
-				let timer=setInterval(function(){
-					console.log('timer');
-					if(window.google){
-						clearInterval(timer);
-						callback();	
-					}
-				},500);
-			break;
+	ready(callback){
+		let timer=setInterval(function(){
+			if(window.google){
+				clearInterval(timer);
+				callback(this);	
 			}
+		}.bind(this),500);
 	 }
 	_cargaGoogleMaps(mc,optMap){
         let librerias="";
         if(mc.libraries){
             librerias="libraries=";
-            mc.libraries.foreach(function(libreria,i){
+            mc.libraries.forEach(function(libreria,i){
                 let c=",";
                 if(i==mc.libraries.length-1)
                     c="";
@@ -737,7 +731,7 @@ class ncMaps{
 	    if(typeof objAz != 'object')	return 	this._mensaje("oMissing");
 	    if(!objAz.path)		return this._mensaje("ap-1");
 	    if(!objAz.tipo)		return this._mensaje("az-1");
-	    !Az.qZoom			?		objAz.qZoom	= 0	: ""; 
+	    !objAz.qZoom			?		objAz.qZoom	= 0	: ""; 
 	    var latlngbounds = new google.maps.LatLngBounds();
 	    objAz.path.forEach(o=>{
 	        switch (objAz.tipo.toLocaleLowerCase()){

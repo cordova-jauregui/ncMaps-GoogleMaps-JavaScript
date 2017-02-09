@@ -5,7 +5,7 @@
 	<title>ncMaps</title>
 	<script src="ncMaps.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
 	<script>
         sp=[
                 [19.2419,-103.7529],
@@ -23,40 +23,36 @@
         ];
         path=[];
         spRopt=[];
-        map=new ncMaps({idMapa:"mapa",libraries:['places']});
-            map.on('ready',function(){
-                map.iniciaSearchBox();
-            paht.forEach(p=>{
-                latLng=map.latLng(p[0],p[1]);
-                path.push(latLng);
+        // new ncMaps({idMapa:"mapa",libraries:['places']})
+        // .ready(function(mapa){
+        //     paht.forEach(p=>{
+        //         latLng=mapa.latLng(p[0],p[1]);
+        //         path.push(latLng);
+        //      });
+        //     paht.forEach(p=>{
+        //         latLng=mapa.latLng(p[0],p[1]);
+        //         spRopt.push(latLng);
+        //      });   
+        //     mapa.agregaPolyline({path,autoZoom:true,flechas:true});
+        //  });
+
+
+		$(document).ready(function(){
+             map=new ncMaps({idMapa:"mapa"});
+            let origen  =map.latLng(19.2431,-103.7223);
+            let destino =map.latLng(19.2544,-103.7256);
+            let casa    = map.latLng(19.2370,-103.7080);
+            map.autoZoom({path:[origen,destino,casa],tipo:'latlng'});
+            map.getIndicaciones({origen,destino,verDistancia:true},function (data){
+               console.log("I",data);
             });
-            paht.forEach(p=>{
-                  latLng=map.latLng(p[0],p[1]);
-                   spRopt.push(latLng);
-               });
-                
-                
-                
-               map.agregaPolyline({path,autoZoom:true,flechas:true});
-           });
-		// $(document).ready(function(){
-            
-//            origen=path[0];
-//            destino=path[1];
-//            map.getDirecciones({origen,destino,verDistancia:true},function (data){
-//                console.log(data );
-//            });
-//            map.getDireccionDePunto(origen,function (data){
-//                console.log(data );
-//            });
-//            distancia=map.getPuntoDeDireccion({direccion:"colima"},function (data){
-//                console.log(data );
-//            });
-            
-
-
-
-		// });
+            map.getDireccionDePunto(casa,function (data){
+               console.log(data.direccion);
+            });
+            map.getPuntoDeDireccion({direccion:"av niños heroes #1133, colima"},function (data){
+                map.agregarMarcador({latLng:data.punto});
+            });
+		});
 	</script>
 	<style>
 		#mapa{

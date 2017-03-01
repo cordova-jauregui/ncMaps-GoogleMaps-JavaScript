@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.5 10/02/2017
+    ** v 1.5.7 27/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -957,7 +957,7 @@ class ncMaps{
 	    		mensaje="Error: Se requiere objeto de configuracion.";
 	    	 break;
 	    	case "c-1":
-	    		mensaje="Error: Se requiere el id HTML donde se iniciara el mapa.";
+	    		mensaje="Error: Se requiere el 'id' HTML donde interactuar.";
 	    	 break;
 	    	case "c-2":
 	    		mensaje="Advertencia: Ingresa tu apiKey de Google Maps";

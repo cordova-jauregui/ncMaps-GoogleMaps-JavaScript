@@ -89,6 +89,17 @@ class ncMaps{
 	     };
 	    this.mapa=new google.maps.Map(document.getElementById(this.idMapa),mapOptions);
 	 }
+	getLatLngUsuario(callback){
+		var me=this;
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position){
+				let latlng=me.latLng(position.coords.latitude,position.coords.longitude);
+				callback({latLng:latlng,estado:"OK"});
+			});
+		} else { 
+			callback({latLng:null,estado:"Geolocation is not supported by this browser."});
+		}
+	 }
 	agregarCirculo(circOpt={}){
 		/* - agregarCirculo - 
 		    *   Descripción: Esta función pinta sobre un google map un círculo.

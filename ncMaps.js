@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.4 08/02/2017
+    ** v 1.5.5 10/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -404,59 +404,114 @@ class ncMaps{
 	    !directOpt.mapa				?		directOpt.mapa				= this.mapa	: "";
 	    !directOpt.draggable		?		directOpt.draggable			= false		: "";
 	    !callback					?		callback					= null		: "";
+	    !directOpt.verIndicaciones	?		directOpt.verIndicaciones	= false		: "";
 	    var callbackData		= {};
 	   	let _travelMode			= null;
 	    let _waypoints			= [];
-	    let directionsService	= new google.maps.DirectionsService();
+		let directionsService	= new google.maps.DirectionsService;
+		let directionsDisplay	= new google.maps.DirectionsRenderer;
 	    let start				= directOpt.origen;
 	    let end					= directOpt.destino;
-	    let getTravelMode		= (modoDeViaje)=>{
- 			switch(modoDeViaje.toUpperCase()){
-				case "BICYCLING":
-					return google.maps.TravelMode.BICYCLING;
-				 break;
-				case "TRANSIT":
-					return google.maps.TravelMode.TRANSIT;
-				 break;
-				case "WALKING":
-					return google.maps.TravelMode.WALKING;
-				 break;
-				default:
-					return google.maps.TravelMode.DRIVING;
-				 break;
-			}
-		 };
-		var totalKm				=(oResult)=>{
-	        let total 	= 0;
-	        let myroute = oResult.routes[0];
-	        for (let i = 0; i < myroute.legs.length; i++) {
-	            total += myroute.legs[i].distance.value;
-	        }
-	        total = total / 1000;
-	        return total + ' km';
-	     };
-	    let puntosObligados		=()=>{
-	    	directOpt.pathObligados.forEach(po=>{
-	    		_waypoints.push({location:po});
-	    	});
-	     };
-	    puntosObligados();
-	    _travelMode=getTravelMode(directOpt.modeDeViaje);
-	    let directionsDisplay=new google.maps.DirectionsRenderer({
-	        map         : directOpt.mapa,
-	        draggable   : directOpt.draggable
-	     });
-	    if(directOpt.verDistancia){
-	        google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
-	            let tKm=totalKm(directionsDisplay.getDirections());
-	            if($("#mAkmToNsUn")[0]==undefined)
-	                $("#"+this.idMapa).append("<div id='mAkmToNsUn'>Distancia: "+tKm+"</div>");
-	            else
-	                $("#mAkmToNsUn").html("Distancia: "+tKm);
-	            if($("#styleMn3X")[0]==undefined)
-	                $("head").append("<style id='styleMn3X'>#mAkmToNsUn{position:absolute;background-color:#3367D6;color:white;padding:10px;margin:10px;border-radius:3px;bottom:0px;-webkit-transition: background-color 2s ease-out;-moz-transition: background-color 10s ease-out;-o-transition: background-color 10s ease-out;transition: background-color 10s ease-out;}#mAkmToNsUn:hover{background-color: red;cursor:pointer}</style>")
-	        }.bind(this));
-	     }	   
+		/*----------------------Funciones Internas-------------------*/
+			let _generaEstilos			=	()				=>{
+				let css=`#ncIndicacionesPanel{
+					font-family: 'Roboto','sans-serif';
+					line-height: 30px;
+					border: 1px solid #DDD;
+					background-color: white;
+					width:0;
+					overflow: hidden;
+					float: right;
+							}
+				#ncPanelContent{
+					overflow-y: scroll;
+					overflow-x: hidden;
+					width: 300px;
+					padding:0 10px;
+					height: 100%;
+					
+				}
+				#ncPanelContent table tr:hover{background-color:#ddd;}
+				.mapaConDirectionPanel{float:left;}`;
+				let style = document.createElement("style");
+				style.type = 'text/css';
+				if (style.styleSheet){
+					style.styleSheet.cssText = css;
+				} else {
+					style.appendChild(document.createTextNode(css));
+				}
+				document.head.appendChild(style);
+			 }
+			let _ajustaAnchoDeMapa		=	(o)				=>{
+				$(`#${o.idMapa}`).addClass("mapaConDirectionPanel");
+				$(`#${o.idMapa}`).animate({width:'-=300'},300);
+				$(`#ncIndicacionesPanel`).animate({width:300},350);
+			 }
+			let _generaNcPanelDiv		=	(o)				=>{
+				$("#ncIndicacionesPanel").remove();
+				let ncPanel=`<div id="ncIndicacionesPanel" class="ncIndicationElement"><div id="ncPanelContent"><center>¿Comó llegar?</center></div></div>`;
+				$(`#${o.idMapa}`).parent().append(ncPanel);
+				let oMapa=$(`#${o.idMapa}`);
+				$("#ncIndicacionesPanel").height(oMapa.height() - 2);
+			 }
+			let _generaIndicacionesPanel=	()				=>{
+			if(!directOpt.verIndicaciones)
+					return ;
+				directionsDisplay.setMap(directOpt.mapa);
+				if(!this.estilizado){
+					_generaEstilos();
+					this.estilizado=true;
+				 }
+				_generaNcPanelDiv(this);
+				directionsDisplay.setPanel(document.getElementById('ncPanelContent'));
+			 }
+			let _generaModoDeViaje		=	(modoDeViaje)	=>{
+				switch(modoDeViaje.toUpperCase()){
+					case "BICYCLING":
+						return google.maps.TravelMode.BICYCLING;
+					 break;
+					case "TRANSIT":
+						return google.maps.TravelMode.TRANSIT;
+					 break;
+					case "WALKING":
+						return google.maps.TravelMode.WALKING;
+					 break;
+					default:
+						return google.maps.TravelMode.DRIVING;
+					 break;
+				}
+			 };
+			let _kilometrosTotales		=	(oResult)		=>{
+				let total 	= 0;
+				let myroute = oResult.routes[0];
+				for (let i = 0; i < myroute.legs.length; i++) {
+					total += myroute.legs[i].distance.value;
+				}
+				total = total / 1000;
+				return total + ' km';
+			 }
+			let _puntosObligados		=	()				=>{
+				if(!directOpt.pathObligados)
+					return ;
+				directOpt.pathObligados.forEach(po=>{
+					_waypoints.push({location:po});
+				});
+			 };
+		/*--------------------Fin Funciones Internas-----------------*/
+		_generaIndicacionesPanel();
+		_puntosObligados();
+		_travelMode=_generaModoDeViaje(directOpt.modeDeViaje);
+		if(directOpt.verDistancia){
+			google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
+				let tKm=_kilometrosTotales(directionsDisplay.getDirections());
+				if($("#mAkmToNsUn")[0]==undefined)
+					$("#"+this.idMapa).append("<div id='mAkmToNsUn' class='ncIndicationElement'>Distancia: "+tKm+"</div>");
+				else
+					$("#mAkmToNsUn").html("Distancia: "+tKm);
+				if($("#styleMn3X")[0]==undefined)
+					$("head").append("<style id='styleMn3X'>#mAkmToNsUn{position:absolute;background-color:#3367D6;color:white;padding:10px;margin:10px;border-radius:3px;bottom:0px;-webkit-transition: background-color 2s ease-out;-moz-transition: background-color 10s ease-out;-o-transition: background-color 10s ease-out;transition: background-color 10s ease-out;}#mAkmToNsUn:hover{background-color: red;cursor:pointer}</style>")
+			}.bind(this));
+		}	   
 	    let request = {
 	        origin				: start,
 	        destination			: end,
@@ -464,11 +519,12 @@ class ncMaps{
 	        travelMode			: _travelMode,
 	        durationInTraffic	: true,
 	        unitSystem			: google.maps.UnitSystem.METRIC
-	     };
+		};	
 	    directionsService.route(request, function(result, status) {
 	        if (status == google.maps.DirectionsStatus.OK) {
-	            directionsDisplay.setOptions({ preserveViewport: directOpt.preserveViewport,suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
+				directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
 	            directionsDisplay.setDirections(result);
+				_ajustaAnchoDeMapa(this);
 	            this.direcArray.push(directionsDisplay);
 	            callbackData.oDirectionsDisplay 	= directionsDisplay;
 	            callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
@@ -478,6 +534,19 @@ class ncMaps{
 	            
 	        }
 	    }.bind(this));
+	 }
+	limpiaIndicaciones(){
+		if(!this.direcArray.length)
+			return;
+		let idMapa=this.idMapa;
+		this.direcArray.forEach(obj=>{obj.setMap(null);});
+		this.direcArray=[];
+		$(`#${idMapa}`).animate({width:'+=300'},350,function(){
+			$(`#${idMapa}`).removeClass("mapaConDirectionPanel");
+		});
+		$(".ncIndicationElement").animate({width:0},300,function(){
+			$(this).remove();
+		});
 	 }
 	getDistancia(disOpt){
 		/* - getDistancia -

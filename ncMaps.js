@@ -436,19 +436,19 @@ class ncMaps{
 					style.appendChild(document.createTextNode(css));
 				}
 				document.head.appendChild(style);
-			 }
+			 };
 			let _ajustaAnchoDeMapa		=	(o)				=>{
 				$(`#${o.idMapa}`).addClass("mapaConDirectionPanel");
 				$(`#${o.idMapa}`).animate({width:'-=300'},300);
 				$(`#ncIndicacionesPanel`).animate({width:300},350);
-			 }
+			 };
 			let _generaNcPanelDiv		=	(o)				=>{
 				$("#ncIndicacionesPanel").remove();
 				let ncPanel=`<div id="ncIndicacionesPanel" class="ncIndicationElement"><div id="ncPanelContent"><center>¿Comó llegar?</center></div></div>`;
 				$(`#${o.idMapa}`).parent().append(ncPanel);
 				let oMapa=$(`#${o.idMapa}`);
 				$("#ncIndicacionesPanel").height(oMapa.height() - 2);
-			 }
+			 };
 			let _generaIndicacionesPanel=	()				=>{
 			if(!directOpt.verIndicaciones)
 					return ;
@@ -459,7 +459,7 @@ class ncMaps{
 				 }
 				_generaNcPanelDiv(this);
 				directionsDisplay.setPanel(document.getElementById('ncPanelContent'));
-			 }
+			 };
 			let _generaModoDeViaje		=	(modoDeViaje)	=>{
 				switch(modoDeViaje.toUpperCase()){
 					case "BICYCLING":

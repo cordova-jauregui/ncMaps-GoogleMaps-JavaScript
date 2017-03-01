@@ -484,7 +484,7 @@ class ncMaps{
 				}
 				total = total / 1000;
 				return total + ' km';
-			 }
+			 };
 			let _puntosObligados		=	()				=>{
 				if(!directOpt.pathObligados)
 					return ;

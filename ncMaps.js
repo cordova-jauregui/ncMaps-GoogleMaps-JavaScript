@@ -327,8 +327,8 @@ class ncMaps{
 		!polyOpt.anchoLinea		? 		polyOpt.anchoLinea		= 2			: "";
 		!polyOpt.mapa			?		polyOpt.mapa			= this.mapa	: "";
 		!polyOpt.banderas		? 		polyOpt.banderas		= false		: ""; 
-		// !polyOpt.animado		? 		polyOpt.animado			= false		: ""; 
 		!polyOpt.velocidad		? 		polyOpt.velocidad		= 100		: ""; 
+	    !polyOpt.mostrara		?		polyOpt.mostrar			= false		: ""; 
 		let polyline;
 	    if(polyOpt.banderas){
 	        this.agregarMarcador({
@@ -350,40 +350,23 @@ class ncMaps{
 								fillColor		: polyOpt.colorLinea,
 								fillOpacity		: 1
 							 };     
-	    // if(polyOpt.animado){
-	    //     try{
-	    //         clearInterval(()=>this.polylineAnimatedInterval);
-	    //     }catch(err){}
-	    //     let oPoly		= polyOpt;
-	    //     oPoly.animado	= false;
-	    //     oPoly.path		= polyOpt.path[0];
-	    //     let polyline 	= this.agregaPolyline(oPoly); 
-	    //     path=polyline.getPath();
-	    //     var count = 1;
-	    //     let movement=function(){
-					// 					path.push(polyOpt.path[count]);
-					// 					if(count==polyOpt.path.length-1)
-					// 						clearInterval(()=>this.polylineAnimatedInterval);
-					// 					count++;
-					// 				};
-	    //     this.polylineAnimatedInterval=setInterval(movement(),polyOpt.velocidad);
-	    // }else{
-		    polyline = new google.maps.Polyline({
-		        path			: polyOpt.path,
-		        map				: polyOpt.mapa,
-		        strokeColor		: polyOpt.colorLinea, 
-		        strokeOpacity	: polyOpt.opacidadLinea,
-		        strokeWeight	: polyOpt.anchoLinea,
-		        scale			: 2,
-		        clickable		: false,
-		        fillOpacity		: polyOpt.opacidadLinea,
-		        icons			: [{
-									icon	: simbolo_flecha,
-									offset	: '0',
-									repeat	: '200px'
-								 }]
-		     }); 
-		// }
+		polyline = new google.maps.Polyline({
+	        path:polyOpt.path,
+	        strokeColor:polyOpt.colorLinea, 
+	        strokeOpacity: polyOpt.opacidadLinea,
+	        strokeWeight: polyOpt.anchoLinea,
+	        scale: 2,
+	        clickable: false,
+	        fillOpacity:polyOpt.opacidadLinea,
+	        icons: [{
+	            icon: simbolo_flecha,
+	            offset: '0',
+	            repeat: '200px'
+	        }]
+	    }); 
+	    if(polyOpt.mostrar)
+	    	polyline.setMap(this.mapa);
+
 		this.polylineArray.push(polyline);
 	    return polyline;
 	 }

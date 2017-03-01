@@ -438,6 +438,10 @@ class ncMaps{
 				document.head.appendChild(style);
 			 };
 			let _ajustaAnchoDeMapa		=	(callback)	=>{
+				if(!directOpt.verIndicaciones){
+					callback();
+					return ;
+				}
 				$(`#${this.idMapa}`).addClass("mapaConDirectionPanel");
 				$(`#${this.idMapa}`).animate({width:'-=300'},300);
 				setTimeout(function(){
@@ -457,7 +461,6 @@ class ncMaps{
 			let _generaIndicacionesPanel=	()				=>{
 				if(!directOpt.verIndicaciones)
 					return ;
-				directionsDisplay.setMap(directOpt.mapa);
 				if(!this.estilizado){
 					_generaEstilos();
 					this.estilizado=true;
@@ -501,6 +504,7 @@ class ncMaps{
 		_generaIndicacionesPanel();
 		_puntosObligados();
 		_travelMode=_generaModoDeViaje(directOpt.modeDeViaje);
+		directionsDisplay.setMap(directOpt.mapa);
 		if(directOpt.verDistancia){
 			google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
 				let tKm=_kilometrosTotales(directionsDisplay.getDirections());
@@ -522,18 +526,17 @@ class ncMaps{
 		 };	
 	    directionsService.route(request, function(result, status) {
 	        if (status == google.maps.DirectionsStatus.OK) {
-	        	if(directOpt.verIndicaciones)
-					_ajustaAnchoDeMapa(function(){
-						this.reajustar();
-						directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
-	            		directionsDisplay.setDirections(result);
-						this.direcArray.push(directionsDisplay);
-						callbackData.oDirectionsDisplay 	= directionsDisplay;
-						callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
-			            callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
-						if(callback!=null)
-							callback(callbackData);
-					}.bind(this));
+				_ajustaAnchoDeMapa(function(){
+					this.reajustar();
+					directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
+					directionsDisplay.setDirections(result);
+					this.direcArray.push(directionsDisplay);
+					callbackData.oDirectionsDisplay 	= directionsDisplay;
+					callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
+					callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
+					if(callback!=null)
+						callback(callbackData);
+				}.bind(this));
 	        }
 		 }.bind(this));
 	}

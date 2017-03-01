@@ -873,6 +873,41 @@ class ncMaps{
 	 }
 	reajustar(){
 	    google.maps.event.trigger(this.mapa, "resize");
+	 }+
+	generaPanorama(panoramaOpt){
+		if(typeof panoramaOpt != 'object')	return 	this._mensaje("oMissing");
+		if(!panoramaOpt)					return 	this._mensaje("oMissing");
+	    if(!panoramaOpt.div)				return	this._mensaje("c-1");
+	    if(!panoramaOpt.latLng)				return 	this._mensaje("oLatLngMissing");
+	    !panoramaOpt.mostrar	?		panoramaOpt.mostrar		= true	: ""; 
+	    if(this.panorama){
+	    	this.mapa.setStreetView(null);
+	    	this.panorama=null;
+	    }
+		this.panorama = new google.maps.StreetViewPanorama(
+	      document.getElementById(panoramaOpt.div), {
+	        position: panoramaOpt.latLng,
+	        visible: true,
+            linksControl: false,
+            panControl: false,
+            addressControl: true,
+            zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.SMALL
+            },
+            enableCloseButton: false
+	      });
+		if(panoramaOpt.mostra)
+			this.setPanorama();
+	 }
+	getPanorama(){
+		return this.panorama;
+	 }
+	setPanorama(panorama){
+		if(!panorama)
+			panorama=this.panorama;
+			try{
+				this.mapa.setStreetView(panorama);
+			}catch(err){console.log(err);}
 	 }
 	snapedRoad(spRopt,callback){
  		if(typeof spRopt != 'object')	return 	this._mensaje("oMissing");

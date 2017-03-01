@@ -56,6 +56,7 @@ class ncMaps{
 	    this.markerAddress=[];
 	    this.polylineAnimatedInterval=null;
 	    this.callback=null;
+	    this.estilizado=false;
 	 }
 	iniciaMapa(mpOpt={}){
 	    !mpOpt.lat          ? this._mensaje('oDefault')		: "";

@@ -873,7 +873,7 @@ class ncMaps{
 	 }
 	reajustar(){
 	    google.maps.event.trigger(this.mapa, "resize");
-	 }+
+	 }
 	generaPanorama(panoramaOpt){
 		if(typeof panoramaOpt != 'object')	return 	this._mensaje("oMissing");
 		if(!panoramaOpt)					return 	this._mensaje("oMissing");

@@ -412,7 +412,7 @@ class ncMaps{
 				let css=`#ncIndicacionesPanel{
 					font-family: 'Roboto','sans-serif';
 					line-height: 30px;
-					border: 1px solid #DDD;
+				
 					background-color: white;
 					width:0;
 					overflow: hidden;
@@ -437,27 +437,32 @@ class ncMaps{
 				}
 				document.head.appendChild(style);
 			 };
-			let _ajustaAnchoDeMapa		=	(o)				=>{
-				$(`#${o.idMapa}`).addClass("mapaConDirectionPanel");
-				$(`#${o.idMapa}`).animate({width:'-=300'},300);
-				$(`#ncIndicacionesPanel`).animate({width:300},350);
+			let _ajustaAnchoDeMapa		=	(callback)	=>{
+				$(`#${this.idMapa}`).addClass("mapaConDirectionPanel");
+				$(`#${this.idMapa}`).animate({width:'-=300'},300);
+				setTimeout(function(){
+					$(`#ncIndicacionesPanel`).css({border:'1px solid #DDD'});
+				},50);
+				$(`#ncIndicacionesPanel`).animate({width:298},350,function(){
+					callback();
+				});
 			 };
-			let _generaNcPanelDiv		=	(o)				=>{
+			let _generaNcPanelDiv		=	()				=>{
 				$("#ncIndicacionesPanel").remove();
 				let ncPanel=`<div id="ncIndicacionesPanel" class="ncIndicationElement"><div id="ncPanelContent"><center>¿Comó llegar?</center></div></div>`;
-				$(`#${o.idMapa}`).parent().append(ncPanel);
-				let oMapa=$(`#${o.idMapa}`);
+				$(`#${this.idMapa}`).parent().append(ncPanel);
+				let oMapa=$(`#${this.idMapa}`);
 				$("#ncIndicacionesPanel").height(oMapa.height() - 2);
 			 };
 			let _generaIndicacionesPanel=	()				=>{
-			if(!directOpt.verIndicaciones)
+				if(!directOpt.verIndicaciones)
 					return ;
 				directionsDisplay.setMap(directOpt.mapa);
 				if(!this.estilizado){
 					_generaEstilos();
 					this.estilizado=true;
 				 }
-				_generaNcPanelDiv(this);
+				_generaNcPanelDiv();
 				directionsDisplay.setPanel(document.getElementById('ncPanelContent'));
 			 };
 			let _generaModoDeViaje		=	(modoDeViaje)	=>{
@@ -506,7 +511,7 @@ class ncMaps{
 				if($("#styleMn3X")[0]==undefined)
 					$("head").append("<style id='styleMn3X'>#mAkmToNsUn{position:absolute;background-color:#3367D6;color:white;padding:10px;margin:10px;border-radius:3px;bottom:0px;-webkit-transition: background-color 2s ease-out;-moz-transition: background-color 10s ease-out;-o-transition: background-color 10s ease-out;transition: background-color 10s ease-out;}#mAkmToNsUn:hover{background-color: red;cursor:pointer}</style>")
 			}.bind(this));
-		}	   
+		 }	   
 	    let request = {
 	        origin				: start,
 	        destination			: end,
@@ -514,22 +519,24 @@ class ncMaps{
 	        travelMode			: _travelMode,
 	        durationInTraffic	: true,
 	        unitSystem			: google.maps.UnitSystem.METRIC
-		};	
+		 };	
 	    directionsService.route(request, function(result, status) {
 	        if (status == google.maps.DirectionsStatus.OK) {
-				directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
-	            directionsDisplay.setDirections(result);
-				_ajustaAnchoDeMapa(this);
-	            this.direcArray.push(directionsDisplay);
-	            callbackData.oDirectionsDisplay 	= directionsDisplay;
-	            callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
-	            callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
-	            if(callback!=null)
-	                callback(callbackData);
-	            
+	        	if(directOpt.verIndicaciones)
+					_ajustaAnchoDeMapa(function(){
+						this.reajustar();
+						directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
+	            		directionsDisplay.setDirections(result);
+						this.direcArray.push(directionsDisplay);
+						callbackData.oDirectionsDisplay 	= directionsDisplay;
+						callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
+			            callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
+						if(callback!=null)
+							callback(callbackData);
+					}.bind(this));
 	        }
-	    }.bind(this));
-	 }
+		 }.bind(this));
+	}
 	limpiaIndicaciones(){
 		if(!this.direcArray.length)
 			return;

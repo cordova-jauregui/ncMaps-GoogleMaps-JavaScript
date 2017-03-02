@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.4 08/02/2017
+    ** v 1.5.7 27/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -56,6 +56,7 @@ class ncMaps{
 	    this.markerAddress=[];
 	    this.polylineAnimatedInterval=null;
 	    this.callback=null;
+	    this.estilizado=false;
 	 }
 	iniciaMapa(mpOpt={}){
 	    !mpOpt.lat          ? this._mensaje('oDefault')		: "";
@@ -87,6 +88,17 @@ class ncMaps{
 	        styles					:	mpOpt.style
 	     };
 	    this.mapa=new google.maps.Map(document.getElementById(this.idMapa),mapOptions);
+	 }
+	getLatLngUsuario(callback){
+		var me=this;
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function(position){
+				let latlng=me.latLng(position.coords.latitude,position.coords.longitude);
+				callback({latLng:latlng,estado:"OK"});
+			});
+		} else { 
+			callback({latLng:null,estado:"Geolocation is not supported by this browser."});
+		}
 	 }
 	agregarCirculo(circOpt={}){
 		/* - agregarCirculo - 
@@ -315,8 +327,8 @@ class ncMaps{
 		!polyOpt.anchoLinea		? 		polyOpt.anchoLinea		= 2			: "";
 		!polyOpt.mapa			?		polyOpt.mapa			= this.mapa	: "";
 		!polyOpt.banderas		? 		polyOpt.banderas		= false		: ""; 
-		// !polyOpt.animado		? 		polyOpt.animado			= false		: ""; 
 		!polyOpt.velocidad		? 		polyOpt.velocidad		= 100		: ""; 
+	    !polyOpt.mostrara		?		polyOpt.mostrar			= false		: ""; 
 		let polyline;
 	    if(polyOpt.banderas){
 	        this.agregarMarcador({
@@ -338,40 +350,23 @@ class ncMaps{
 								fillColor		: polyOpt.colorLinea,
 								fillOpacity		: 1
 							 };     
-	    // if(polyOpt.animado){
-	    //     try{
-	    //         clearInterval(()=>this.polylineAnimatedInterval);
-	    //     }catch(err){}
-	    //     let oPoly		= polyOpt;
-	    //     oPoly.animado	= false;
-	    //     oPoly.path		= polyOpt.path[0];
-	    //     let polyline 	= this.agregaPolyline(oPoly); 
-	    //     path=polyline.getPath();
-	    //     var count = 1;
-	    //     let movement=function(){
-					// 					path.push(polyOpt.path[count]);
-					// 					if(count==polyOpt.path.length-1)
-					// 						clearInterval(()=>this.polylineAnimatedInterval);
-					// 					count++;
-					// 				};
-	    //     this.polylineAnimatedInterval=setInterval(movement(),polyOpt.velocidad);
-	    // }else{
-		    polyline = new google.maps.Polyline({
-		        path			: polyOpt.path,
-		        map				: polyOpt.mapa,
-		        strokeColor		: polyOpt.colorLinea, 
-		        strokeOpacity	: polyOpt.opacidadLinea,
-		        strokeWeight	: polyOpt.anchoLinea,
-		        scale			: 2,
-		        clickable		: false,
-		        fillOpacity		: polyOpt.opacidadLinea,
-		        icons			: [{
-									icon	: simbolo_flecha,
-									offset	: '0',
-									repeat	: '200px'
-								 }]
-		     }); 
-		// }
+		polyline = new google.maps.Polyline({
+	        path:polyOpt.path,
+	        strokeColor:polyOpt.colorLinea, 
+	        strokeOpacity: polyOpt.opacidadLinea,
+	        strokeWeight: polyOpt.anchoLinea,
+	        scale: 2,
+	        clickable: false,
+	        fillOpacity:polyOpt.opacidadLinea,
+	        icons: [{
+	            icon: simbolo_flecha,
+	            offset: '0',
+	            repeat: '200px'
+	        }]
+	    }); 
+	    if(polyOpt.mostrar)
+	    	polyline.setMap(this.mapa);
+
 		this.polylineArray.push(polyline);
 	    return polyline;
 	 }
@@ -404,59 +399,123 @@ class ncMaps{
 	    !directOpt.mapa				?		directOpt.mapa				= this.mapa	: "";
 	    !directOpt.draggable		?		directOpt.draggable			= false		: "";
 	    !callback					?		callback					= null		: "";
+	    !directOpt.verIndicaciones	?		directOpt.verIndicaciones	= false		: "";
 	    var callbackData		= {};
 	   	let _travelMode			= null;
 	    let _waypoints			= [];
-	    let directionsService	= new google.maps.DirectionsService();
+		let directionsService	= new google.maps.DirectionsService;
+		let directionsDisplay	= new google.maps.DirectionsRenderer;
 	    let start				= directOpt.origen;
 	    let end					= directOpt.destino;
-	    let getTravelMode		= (modoDeViaje)=>{
- 			switch(modoDeViaje.toUpperCase()){
-				case "BICYCLING":
-					return google.maps.TravelMode.BICYCLING;
-				 break;
-				case "TRANSIT":
-					return google.maps.TravelMode.TRANSIT;
-				 break;
-				case "WALKING":
-					return google.maps.TravelMode.WALKING;
-				 break;
-				default:
-					return google.maps.TravelMode.DRIVING;
-				 break;
-			}
-		 };
-		var totalKm				=(oResult)=>{
-	        let total 	= 0;
-	        let myroute = oResult.routes[0];
-	        for (let i = 0; i < myroute.legs.length; i++) {
-	            total += myroute.legs[i].distance.value;
-	        }
-	        total = total / 1000;
-	        return total + ' km';
-	     };
-	    let puntosObligados		=()=>{
-	    	directOpt.pathObligados.forEach(po=>{
-	    		_waypoints.push({location:po});
-	    	});
-	     };
-	    puntosObligados();
-	    _travelMode=getTravelMode(directOpt.modeDeViaje);
-	    let directionsDisplay=new google.maps.DirectionsRenderer({
-	        map         : directOpt.mapa,
-	        draggable   : directOpt.draggable
-	     });
-	    if(directOpt.verDistancia){
-	        google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
-	            let tKm=totalKm(directionsDisplay.getDirections());
-	            if($("#mAkmToNsUn")[0]==undefined)
-	                $("#"+this.idMapa).append("<div id='mAkmToNsUn'>Distancia: "+tKm+"</div>");
-	            else
-	                $("#mAkmToNsUn").html("Distancia: "+tKm);
-	            if($("#styleMn3X")[0]==undefined)
-	                $("head").append("<style id='styleMn3X'>#mAkmToNsUn{position:absolute;background-color:#3367D6;color:white;padding:10px;margin:10px;border-radius:3px;bottom:0px;-webkit-transition: background-color 2s ease-out;-moz-transition: background-color 10s ease-out;-o-transition: background-color 10s ease-out;transition: background-color 10s ease-out;}#mAkmToNsUn:hover{background-color: red;cursor:pointer}</style>")
-	        }.bind(this));
-	     }	   
+		/*----------------------Funciones Internas-------------------*/
+			let _generaEstilos			=	()				=>{
+				let css=`#ncIndicacionesPanel{
+					font-family: 'Roboto','sans-serif';
+					line-height: 30px;
+				
+					background-color: white;
+					width:0;
+					overflow: hidden;
+					float: right;
+							}
+				#ncPanelContent{
+					overflow-y: scroll;
+					overflow-x: hidden;
+					width: 300px;
+					padding:0 10px;
+					height: 100%;
+					
+				}
+				#ncPanelContent table tr:hover{background-color:#ddd;}
+				.mapaConDirectionPanel{float:left;}`;
+				let style = document.createElement("style");
+				style.type = 'text/css';
+				if (style.styleSheet){
+					style.styleSheet.cssText = css;
+				} else {
+					style.appendChild(document.createTextNode(css));
+				}
+				document.head.appendChild(style);
+			 };
+			let _ajustaAnchoDeMapa		=	(callback)	=>{
+				if(!directOpt.verIndicaciones){
+					callback();
+					return ;
+				}
+				$(`#${this.idMapa}`).addClass("mapaConDirectionPanel");
+				$(`#${this.idMapa}`).animate({width:'-=300'},300);
+				setTimeout(function(){
+					$(`#ncIndicacionesPanel`).css({border:'1px solid #DDD'});
+				},50);
+				$(`#ncIndicacionesPanel`).animate({width:298},350,function(){
+					callback();
+				});
+			 };
+			let _generaNcPanelDiv		=	()				=>{
+				$("#ncIndicacionesPanel").remove();
+				let ncPanel=`<div id="ncIndicacionesPanel" class="ncIndicationElement"><div id="ncPanelContent"><center>¿Comó llegar?</center></div></div>`;
+				$(`#${this.idMapa}`).parent().append(ncPanel);
+				let oMapa=$(`#${this.idMapa}`);
+				$("#ncIndicacionesPanel").height(oMapa.height() - 2);
+			 };
+			let _generaIndicacionesPanel=	()				=>{
+				if(!directOpt.verIndicaciones)
+					return ;
+				if(!this.estilizado){
+					_generaEstilos();
+					this.estilizado=true;
+				 }
+				_generaNcPanelDiv();
+				directionsDisplay.setPanel(document.getElementById('ncPanelContent'));
+			 };
+			let _generaModoDeViaje		=	(modoDeViaje)	=>{
+				switch(modoDeViaje.toUpperCase()){
+					case "BICYCLING":
+						return google.maps.TravelMode.BICYCLING;
+					 break;
+					case "TRANSIT":
+						return google.maps.TravelMode.TRANSIT;
+					 break;
+					case "WALKING":
+						return google.maps.TravelMode.WALKING;
+					 break;
+					default:
+						return google.maps.TravelMode.DRIVING;
+					 break;
+				}
+			 };
+			let _kilometrosTotales		=	(oResult)		=>{
+				let total 	= 0;
+				let myroute = oResult.routes[0];
+				for (let i = 0; i < myroute.legs.length; i++) {
+					total += myroute.legs[i].distance.value;
+				}
+				total = total / 1000;
+				return total + ' km';
+			 };
+			let _puntosObligados		=	()				=>{
+				if(!directOpt.pathObligados)
+					return ;
+				directOpt.pathObligados.forEach(po=>{
+					_waypoints.push({location:po});
+				});
+			 };
+		/*--------------------Fin Funciones Internas-----------------*/
+		_generaIndicacionesPanel();
+		_puntosObligados();
+		_travelMode=_generaModoDeViaje(directOpt.modeDeViaje);
+		directionsDisplay.setMap(directOpt.mapa);
+		if(directOpt.verDistancia){
+			google.maps.event.addListener(directionsDisplay, 'directions_changed', function() {
+				let tKm=_kilometrosTotales(directionsDisplay.getDirections());
+				if($("#mAkmToNsUn")[0]==undefined)
+					$("#"+this.idMapa).append("<div id='mAkmToNsUn' class='ncIndicationElement'>Distancia: "+tKm+"</div>");
+				else
+					$("#mAkmToNsUn").html("Distancia: "+tKm);
+				if($("#styleMn3X")[0]==undefined)
+					$("head").append("<style id='styleMn3X'>#mAkmToNsUn{position:absolute;background-color:#3367D6;color:white;padding:10px;margin:10px;border-radius:3px;bottom:0px;-webkit-transition: background-color 2s ease-out;-moz-transition: background-color 10s ease-out;-o-transition: background-color 10s ease-out;transition: background-color 10s ease-out;}#mAkmToNsUn:hover{background-color: red;cursor:pointer}</style>")
+			}.bind(this));
+		 }	   
 	    let request = {
 	        origin				: start,
 	        destination			: end,
@@ -464,20 +523,35 @@ class ncMaps{
 	        travelMode			: _travelMode,
 	        durationInTraffic	: true,
 	        unitSystem			: google.maps.UnitSystem.METRIC
-	     };
+		 };	
 	    directionsService.route(request, function(result, status) {
 	        if (status == google.maps.DirectionsStatus.OK) {
-	            directionsDisplay.setOptions({ preserveViewport: directOpt.preserveViewport,suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
-	            directionsDisplay.setDirections(result);
-	            this.direcArray.push(directionsDisplay);
-	            callbackData.oDirectionsDisplay 	= directionsDisplay;
-	            callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
-	            callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
-	            if(callback!=null)
-	                callback(callbackData);
-	            
+				_ajustaAnchoDeMapa(function(){
+					this.reajustar();
+					directionsDisplay.setOptions({suppressMarkers: directOpt.suppressMarkers,suppressPolylines:directOpt.suppressPolylines});
+					directionsDisplay.setDirections(result);
+					this.direcArray.push(directionsDisplay);
+					callbackData.oDirectionsDisplay 	= directionsDisplay;
+					callbackData.duracion				= directionsDisplay.directions.routes[0].legs[0].duration.text;
+					callbackData.distancia				= directionsDisplay.directions.routes[0].legs[0].distance.text.replace(",",".");
+					if(callback!=null)
+						callback(callbackData);
+				}.bind(this));
 	        }
-	    }.bind(this));
+		 }.bind(this));
+	}
+	limpiaIndicaciones(){
+		if(!this.direcArray.length)
+			return;
+		let idMapa=this.idMapa;
+		this.direcArray.forEach(obj=>{obj.setMap(null);});
+		this.direcArray=[];
+		$(`#${idMapa}`).animate({width:'+=300'},350,function(){
+			$(`#${idMapa}`).removeClass("mapaConDirectionPanel");
+		});
+		$(".ncIndicationElement").animate({width:0},300,function(){
+			$(this).remove();
+		});
 	 }
 	getDistancia(disOpt){
 		/* - getDistancia -
@@ -730,8 +804,9 @@ class ncMaps{
 	 	*/
 	    if(typeof objAz != 'object')	return 	this._mensaje("oMissing");
 	    if(!objAz.path)		return this._mensaje("ap-1");
-	    if(!objAz.tipo)		return this._mensaje("az-1");
-	    !objAz.qZoom			?		objAz.qZoom	= 0	: ""; 
+	    !objAz.tipo				?		this._mensaje("oDefault")	: ""; 
+	    !objAz.tipo				?		objAz.tipo	= "latlng"		: ""; 
+	    !objAz.qZoom			?		objAz.qZoom	= 		0		: ""; 
 	    var latlngbounds = new google.maps.LatLngBounds();
 	    objAz.path.forEach(o=>{
 	        switch (objAz.tipo.toLocaleLowerCase()){
@@ -805,6 +880,41 @@ class ncMaps{
 	reajustar(){
 	    google.maps.event.trigger(this.mapa, "resize");
 	 }
+	generaPanorama(panoramaOpt){
+		if(typeof panoramaOpt != 'object')	return 	this._mensaje("oMissing");
+		if(!panoramaOpt)					return 	this._mensaje("oMissing");
+	    if(!panoramaOpt.div)				return	this._mensaje("c-1");
+	    if(!panoramaOpt.latLng)				return 	this._mensaje("oLatLngMissing");
+	    !panoramaOpt.mostrar	?		panoramaOpt.mostrar		= true	: ""; 
+	    if(this.panorama){
+	    	this.mapa.setStreetView(null);
+	    	this.panorama=null;
+	    }
+		this.panorama = new google.maps.StreetViewPanorama(
+	      document.getElementById(panoramaOpt.div), {
+	        position: panoramaOpt.latLng,
+	        visible: true,
+            linksControl: false,
+            panControl: false,
+            addressControl: true,
+            zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.SMALL
+            },
+            enableCloseButton: false
+	      });
+		if(panoramaOpt.mostra)
+			this.setPanorama();
+	 }
+	getPanorama(){
+		return this.panorama;
+	 }
+	setPanorama(panorama){
+		if(!panorama)
+			panorama=this.panorama;
+			try{
+				this.mapa.setStreetView(panorama);
+			}catch(err){console.log(err);}
+	 }
 	snapedRoad(spRopt,callback){
  		if(typeof spRopt != 'object')	return 	this._mensaje("oMissing");
 	    if(!spRopt.path)	return	this._mensaje("ap-1");
@@ -857,7 +967,7 @@ class ncMaps{
 	    		mensaje="Error: Se requiere objeto de configuracion.";
 	    	 break;
 	    	case "c-1":
-	    		mensaje="Error: Se requiere el id HTML donde se iniciara el mapa.";
+	    		mensaje="Error: Se requiere el 'id' HTML donde interactuar.";
 	    	 break;
 	    	case "c-2":
 	    		mensaje="Advertencia: Ingresa tu apiKey de Google Maps";

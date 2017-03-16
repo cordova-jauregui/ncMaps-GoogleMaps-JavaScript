@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.7 27/02/2017
+    ** v 1.5.8 27/02/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -539,7 +539,7 @@ class ncMaps{
 				}.bind(this));
 	        }
 		 }.bind(this));
-	}
+	 }
 	limpiaIndicaciones(){
 		if(!this.direcArray.length)
 			return;
@@ -551,7 +551,8 @@ class ncMaps{
 		});
 		$(".ncIndicationElement").animate({width:0},300,function(){
 			$(this).remove();
-		});
+			this.reajustar();
+		}.bind(this));
 	 }
 	getDistancia(disOpt){
 		/* - getDistancia -

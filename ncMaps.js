@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.8 27/02/2017
+    ** v 1.5.9 23/03/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -662,10 +662,26 @@ class ncMaps{
             if (status == google.maps.GeocoderStatus.OK) {
                 let direccion	= results[0].formatted_address;
                 let allData		= results[0];
+                let calle="";
+                let numero="";
+                results[0].address_components.forEach((ac)=>{
+                    let tempCalle,tempNumero;
+                    tempCalle=ac.types.findIndex(function(a){
+                        return a.indexOf('route')>=0
+                     });
+                    if(tempCalle>=0)
+                        calle=ac.long_name;
+                    tempNumero=ac.types.findIndex(function(a){
+                        return a.indexOf('street_number')>=0
+                    });
+                    if(tempNumero>=0)
+                        numero=ac.long_name;
+                    });
+                calle=`${calle} ${numero}`;
                 if(callback)
-                	callback({direccion,allData});
+                	callback({calle,direccion,allData});
                 else
-                	console.log(direccion);
+                	console.log(calle,direccion,allData);
             } else {
                 window.alert('Google no pudo encontrar a la dirección: ' + status);
             }
@@ -708,11 +724,7 @@ class ncMaps{
                 else
                 	console.log(punto,direccion);  
             } else {
-                if(!addressOpt.restrictions.pais){
-                    console.log('otra oportunidad');
-                    this.getPositionByAddress({restrictions:false,direccion: addressOpt.direccion,content:addressOpt.content});
-                }else
-                    window.alert('Google no pudo encontrar el punto ' + status);
+				window.alert('Google no pudo encontrar el punto ' + status);
             }
         }.bind(this));
 	 }

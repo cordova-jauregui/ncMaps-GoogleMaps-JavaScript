@@ -15,7 +15,7 @@ class ncMaps{
 	   	this._iniciaVariablesInternas();
 	    if (!window.google && mc.cargarMaps) {
 	    	this._cargaGoogleMaps(mc,optMap);
-	    }else if(!optMap)
+	    }else if(optMap)
 	        this.iniciaMapa(optMap);
 	 }
 	ready(callback){

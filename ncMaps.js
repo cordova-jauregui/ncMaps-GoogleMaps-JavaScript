@@ -19,12 +19,16 @@ class ncMaps{
 	        this.iniciaMapa(optMap);
 	 }
 	ready(callback){
-		let timer=setInterval(function(){
-			if(window.google){
-				clearInterval(timer);
-				callback(this);	
-			}
-		}.bind(this),500);
+		if(window.google){
+			callback(this);	
+		}else{
+			let timer=setInterval(function(){
+				if(window.google){
+					clearInterval(timer);
+					callback(this);	
+				}
+			}.bind(this),500);
+		}
 	 }
 	_cargaGoogleMaps(mc,optMap){
         let librerias="";

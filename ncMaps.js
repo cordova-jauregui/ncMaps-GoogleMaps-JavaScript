@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.9 23/03/2017
+    ** v 1.5.95 03/04/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -732,16 +732,18 @@ class ncMaps{
             }
         }.bind(this));
 	 }
-	iniciaSearchBox(objSearch={}){//fix
+	iniciaSearchBox(objSearch={}){
 		/*
 			*
 		*/
 	    !objSearch.texto					?   this._mensaje("oDefault"):"";
-	    !objSearch.texto					?   objSearch.texto="¿Qué es lo que buscas?":"";
+	    !objSearch.texto					?   objSearch.texto="&iquest;Qu&eacute; es lo que buscas?":"";
 	    !objSearch.change					?   objSearch.change=false:"";
+	    !objSearch.marginLeft				?   objSearch.marginLeft="10":"";
+	    !objSearch.maxWidth					?   objSearch.maxWidth="500":"";
 	    !objSearch.autoReturnToPosition		?   objSearch.autoReturnToPosition=false:"";
-	    let input =$('<input type="text" id="search" class="form-control" placeholder="'+objSearch.texto+'" style="padding:10px;background-color:rgba(255,255,255,0.93);margin:10px 0 0 10px;width:35%;max-width:500px;border: 1px solid #BFBFBF;">')[0];
-	    let cl=$('<i id="clSrc" class="glyphicon glyphicon-remove" style="display:none;margin:10px 0 0 -20px;line-height:30px;color:gray;cursor:pointer;font-size:15px;width:20px;background-color: white;"></i>')[0];
+	    let input =$(`<input type="text" id="search" class="form-control" placeholder="${objSearch.texto}" style="padding:10px;background-color:rgba(255,255,255,0.93);margin:10px 0 0 10px;width:35%;margin-left:${objSearch.marginLeft}px;max-width:${objSearch.maxWidth}px;border: 1px solid #BFBFBF;">`)[0];
+	    let cl=$('<i id="clSrc" class="glyphicon glyphicon-remove" style="display:none;margin:12px 0 0 -21px;line-height:30px;color:gray;cursor:pointer;font-size:15px;width:20px;background-color: white;"></i>')[0];
 	    try{
 	        new google.maps.places.SearchBox(($("<input>")[0]));
 	    }catch(err){
@@ -779,24 +781,25 @@ class ncMaps{
 	    this.searchBox = new google.maps.places.SearchBox(input);
 	    ()=> this.searchBox.setBounds(()=> this.mapa.getBounds());
 	    this.mapa.addListener('bounds_changed', function() {
-	        ()=> this.searchBox.setBounds(()=> this.mapa.getBounds());
-	    });
+	        this.searchBox.setBounds(this.mapa.getBounds());
+	    }.bind(this));
+	    let place,p;
 	    this.searchBox.addListener('places_changed', function() {
-	        let places = ()=> this.searchBox.getPlaces();
+	        let places =this.searchBox.getPlaces();
 	        if (places.length == 0) {
 	            return;
 	        }
 	        try{searchBoxMarker.setMap(null);}catch(err){}
 	            $("#clSrc").fadeIn(500);
 	            place=places[0];
-	        if(objSearch.change!=false){//si hay funcion change, la ejecuta 
+	        if(objSearch.change!=false){
 	            place.position=place.geometry.location;
 	            objSearch.change(place);
 	            return ;
 	        }
 	        p=place.geometry.location;
-	        searchBoxMarker= ()=> this.agregarMarcador({lat:p.lat(),lng:p.lng(),titulo:place.name,mover:true});
-	    });
+	        searchBoxMarker=this.agregarMarcador({lat:p.lat(),lng:p.lng(),titulo:place.name,mover:true});
+	    }.bind(this));
 	 }
 	latLngBounds(ne,sw){
 	    return new google.maps.LatLngBounds(ne,sw);

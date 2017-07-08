@@ -2,7 +2,7 @@
     ** ncMaps
     ** 
     **
-    ** v 1.5.95 03/04/2017
+    ** v 1.6 07/07/2017
     ** @Nestor Cordova 
  */
 class ncMaps{
@@ -40,10 +40,11 @@ class ncMaps{
                     c="";
                 librerias+=libreria+c;
             });
+            librerias+="&";
          }
         let apiKey="";
         if (mc.apiKey){
-            apiKey='&key='+mc.apiKey;
+            apiKey='key='+mc.apiKey;
          }
         this.loadScript('https://maps.googleapis.com/maps/api/js?'+librerias+apiKey,() => this.iniciaMapa(optMap));
         return ;
@@ -208,7 +209,7 @@ class ncMaps{
 	    !markOpt.lat			? markOpt.lat			= 19.2469			: "";
 	    !markOpt.lng			? markOpt.lng			= -103.7263			: "";
 	    !markOpt.latLng			? markOpt.latLng		= new google.maps.LatLng(markOpt.lat, markOpt.lng):"";
-	    !markOpt.arrastrable	? markOpt.arrastrable	= false				:"";
+	    !markOpt.arrastrable	? markOpt.arrastrable	= false				: "";
 	    !markOpt.urlIcon		? markOpt.urlIcon		= ""				: ""; 
 	    !markOpt.titulo			? markOpt.titulo		= "Marcador"		: "";
 	    !markOpt.mapa			? markOpt.mapa			= this.mapa			: "";
@@ -216,7 +217,8 @@ class ncMaps{
 	    !markOpt.infoWindow		? markOpt.infoWindow	= false				: "";   
 	    !markOpt.clickable		? markOpt.clickable		= true				: "";   
 	    !markOpt.contenidoInfo	? markOpt.contenidoInfo	= markOpt.Titulo	: "";
-	    !markOpt.zIndex			? markOpt.zIndex		= 1:"";
+	    !markOpt.zIndex			? markOpt.zIndex		= 1					: "";
+	    markOpt.optimized ==undefined?markOpt.optimized	= true				: "";
 	    let opcionesMarca =	{
 								position	: markOpt.latLng,
 								icon		: markOpt.urlIcon,  
@@ -224,12 +226,17 @@ class ncMaps{
 								draggable	: markOpt.arrastrable,
 								map			: markOpt.mapa,
 								clickable	: markOpt.clickable,
-								zIndex		: markOpt.zIndex
+								zIndex		: markOpt.zIndex,
+								optimized	: markOpt.optimized
 							 };
+							 console.log(opcionesMarca);//ncBorrar
 		let marker = new google.maps.Marker(opcionesMarca);
 		if(markOpt.mover){
 			this.moverMapa({latLng:marker.getPosition()});
 	     }
+	    marker.close=function() {
+	    	marker.setMap(null);
+	    }.bind(marker);
 	    this.markerArray.push(marker);
 	    if(markOpt.infoWindow){
 	        marker.infoWindow=this.agregarInfoWindow({
